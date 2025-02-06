@@ -132,3 +132,4 @@ Werkzeug==3.0.4
 wrapt==1.16.0
 yarl==1.15.2
 zipp==3.20.2
+openinference-instrumentation-langchain==0.1.31
