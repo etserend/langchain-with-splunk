@@ -10,20 +10,17 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from flask import Flask, request
-from openinference.instrumentation.langchain import LangChainInstrumentor
-from opentelemetry import trace as trace_api
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk import trace as trace_sdk
-from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+from opentelemetry.instrumentation.langchain import LangchainInstrumentor
+from traceloop.sdk import Traceloop
 
-endpoint = os.getenv("OTEL_EXPORTER_OTLP_HTTP_ENDPOINT", "http://127.0.0.1:4318")
-tracer_provider = trace_sdk.TracerProvider()
-trace_api.set_tracer_provider(tracer_provider)
-tracer_provider.add_span_processor(SimpleSpanProcessor(OTLPSpanExporter(endpoint)))
-tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+# import openlit
+
+otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_HTTP_ENDPOINT", "http://127.0.0.1:4318")
+Traceloop.init(app_name="my-llm-app-openllmetry")
+# openlit.init(otlp_endpoint=otel_endpoint, application_name="my-llm-app", environment="test")
 
 app = Flask(__name__)
-LangChainInstrumentor().instrument()
+LangchainInstrumentor().instrument()
 
 
 # use a local model
@@ -80,4 +77,3 @@ def ask_question():
     )
 
     return response.content
-
